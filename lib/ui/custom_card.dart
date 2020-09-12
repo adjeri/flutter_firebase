@@ -10,6 +10,7 @@ class CustomCard extends StatelessWidget {
   const CustomCard({Key key, this.snapshot, this.index}) : super(key: key);
   @override
   Widget build(BuildContext context) {
+    var snapshotData = snapshot.docs[index];
     return Column(
       children: [
         Container(
@@ -19,12 +20,12 @@ class CustomCard extends StatelessWidget {
             child: Column(
               children: [
                 ListTile(
-                  title: Text(snapshot.docs[index].get('title')),
-                  subtitle: Text(snapshot.docs[index].get('description')),
+                  title: Text(snapshotData.get('title')),
+                  subtitle: Text(snapshotData.get('description')),
                   leading: CircleAvatar(
                     radius: 34,
                     child:
-                        Text(snapshot.docs[index].get('title').toString()[0]),
+                        Text(snapshotData.get('title').toString()[0]),
                   ),
                 ),
                 Padding(
@@ -32,7 +33,7 @@ class CustomCard extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("By ${snapshot.docs[index].get('name')} "),
+                      Text("By ${snapshotData.get('name')} "),
                       Text(_getTimestamp()),
                     ],
                   ),
