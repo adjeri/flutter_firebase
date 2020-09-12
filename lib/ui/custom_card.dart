@@ -12,6 +12,9 @@ class CustomCard extends StatelessWidget {
   Widget build(BuildContext context) {
     var snapshotData = snapshot.docs[index];
     var docId = snapshot.docs[index].id;
+    TextEditingController nameInputController = TextEditingController(text: snapshotData.get('name'));
+    TextEditingController titleInputController = TextEditingController(text: snapshotData.get('title'));
+    TextEditingController descriptionInputController = TextEditingController(text: snapshotData.get('description'));
     return Column(
       children: [
         Container(
@@ -42,7 +45,79 @@ class CustomCard extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.start,
                   children: [
-                    IconButton(icon: FaIcon(FontAwesomeIcons.edit, size: 15,), onPressed: (){}),
+                    IconButton(icon: FaIcon(FontAwesomeIcons.edit, size: 15,), onPressed: () async {
+                      await showDialog(context: context,
+                        child: AlertDialog(
+                          contentPadding: EdgeInsets.all(10),
+                          content: Column(
+                            children: [
+                              Text("Please fill out the form to update"),
+                              Expanded(
+                                  child: TextField(
+                                    autofocus: true,
+                                    autocorrect: true,
+                                    decoration: InputDecoration(labelText: "Your Name *"),
+                                    controller: nameInputController,
+                                  )),
+                              Expanded(
+                                  child: TextField(
+                                    autofocus: true,
+                                    autocorrect: true,
+                                    decoration: InputDecoration(labelText: "Title *"),
+                                    controller: titleInputController,
+                                  )),
+                              Expanded(
+                                  child: TextField(
+                                    autofocus: true,
+                                    autocorrect: true,
+                                    decoration: InputDecoration(labelText: "Description*"),
+                                    controller: descriptionInputController,
+                                  )),
+                            ],
+                          ),
+                          actions: [
+                            FlatButton(
+                              onPressed: () {
+                                nameInputController.clear();
+                                titleInputController.clear();
+                                descriptionInputController.clear();
+                                Navigator.pop(context);
+                              },
+                              child: Text("Cancel"),
+                            ),
+                            FlatButton(
+                              onPressed: () {
+                                if (titleInputController.text.isNotEmpty &&
+                                    nameInputController.text.isNotEmpty &&
+                                    descriptionInputController.text.isNotEmpty) {
+                                  FirebaseFirestore.instance.collection("board")
+                                      .doc(docId)
+                                      .update({
+                                    "name": nameInputController.text,
+                                    "title": titleInputController.text,
+                                    "description": descriptionInputController.text,
+                                    "timestamp": new DateTime.now()
+                                  }).then((value) => Navigator.pop(context));
+                                  // FirebaseFirestore.instance.collection("board").add({
+                                  //   "name": nameInputController.text,
+                                  //   "title": titleInputController.text,
+                                  //   "description": descriptionInputController.text,
+                                  //   "timestamp": new DateTime.now()
+                                  // }).then((response) {
+                                  //   print(response.id);
+                                  //   nameInputController.clear();
+                                  //   titleInputController.clear();
+                                  //   descriptionInputController.clear();
+                                  //   Navigator.pop(context);
+                                  // }).catchError((error) => print(error));
+                                }
+                              },
+                              child: Text("Update"),
+                            ),
+                          ],
+                        ),
+                      );
+                    }),
                     SizedBox(height: 20,),
                     IconButton(icon: FaIcon(FontAwesomeIcons.trashAlt, size: 15,), onPressed: () async {
                       await FirebaseFirestore.instance.collection("board").doc(docId).delete();
