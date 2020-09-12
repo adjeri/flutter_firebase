@@ -11,10 +11,11 @@ class CustomCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var snapshotData = snapshot.docs[index];
+    var docId = snapshot.docs[index].id;
     return Column(
       children: [
         Container(
-          height: 150,
+          height: 190,
           child: Card(
             elevation: 3,
             child: Column(
@@ -38,7 +39,17 @@ class CustomCard extends StatelessWidget {
                     ],
                   ),
                 ),
-              ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(icon: FaIcon(FontAwesomeIcons.edit, size: 15,), onPressed: (){}),
+                    SizedBox(height: 20,),
+                    IconButton(icon: FaIcon(FontAwesomeIcons.trashAlt, size: 15,), onPressed: () async {
+                      await FirebaseFirestore.instance.collection("board").doc(docId).delete();
+                    })
+                  ],
+                ),
+              ], // Widget
             ),
           ),
         ),
